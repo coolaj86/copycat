@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fb="http://www.facebook.com/2008/fbml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>CopyCat - Template</title>
+    <link rel="stylesheet" type="text/css" href="vendor/highlight/styles/school_book.css" media="screen" />
+    <script src="vendor/showdown/showdown.js"></script>
+    <script src="vendor/highlight/highlight.pack.js"></script>
+    <script src="vendor/jquery/jquery-1.4.2.js"></script>
+    <script src="vendor/underscore/underscore.js"></script>
+    <!-- script src="http://bitbucket.org/JustinLove/es5/raw/c6103eab597c/es5.js"></script -->
+    <!-- script src="http://vice-versa.googlecode.com/files/vice-versa.0.1.4b.min.js"></script -->
+    <script src="vendor/persevere/global-es5.js"></script>
+    <script src="vendor/jaysyncunit/jaysyncunit.js"></script>
+    <script src="vendor/pure/pure.js"></script>
+    <script src="vendor/inflection-js/inflection.js"></script>
+    <style>
+      #doc {
+        float: left;
+      }
+      div.contacts {
+        float: right;
+        width: 600px;
+      }
+      .contacts div, .contacts span, .contacts ul, .contacts li {
+        margin: 10px;
+        padding: 5px;
+      }
+      .contacts div {
+        border: 2px solid black;
+      }
+      .contacts span {
+        border: 1px solid blue;
+      }
+      .contacts ul {
+        border: 2px solid orange;
+      }
+      .contacts li {
+        border: 1px solid green;
+      }
+    </style>
+  </head>
+  <body>
+Create an on-the-fly template for any data structure. Copy / Paste and style to taste!
+    <div id="doc">
+      "use strict";
+      (function () {
+        var fixture = {
+          "friends" : [
+            {
+              "first" : "Jamshid",
+              "last" : "Mavandi",
+              "accounts" : {
+                "gmail" : "mvndaai",
+                "facebook" : "mvndaai"
+              },
+              "interests" : {
+                "tv shows" : [
+                  "Julian Smith"
+                ]
+              }
+            }
+          ],
+          // "familiy" : [],
+          "self" : {
+            "first" : "AJ",
+            "last" : "ONeal",
+            "accounts" : {
+              "twitter" : "#coolaj86",
+              "gmail" : "coolaj86",
+              "aim" : "coolaj1986",
+              "linkedin" : "coolaj86",
+              "phone" : "317-426-5555",
+              "facebook" : "coolaj86"
+            },
+            "interests" : {
+              "movies" : [
+                "Star Wars Trilogy",
+                "Spiderman",
+                "The princess bride"
+              ]
+            }
+          }
+        };
+
+        function typeOf(value) {
+          var s = typeof value;
+          if (s === 'object') {
+            if (value) {
+              if (typeof value.length === 'number' &&
+                !(value.propertyIsEnumerable('length')) &&
+                typeof value.splice === 'function') {
+                s = 'array';
+              }
+            } else {
+              s = 'null';
+            }
+          }
+          return s;
+        } // Thanks to Crockford
+
+        function format_label(s) {
+          return s.titleize();
+        }
+        function format_array_item(s) {
+          return s.singularize();
+        }
+
+        var labelize,
+        singularize;
+        // Return the string or an empty string
+        function string_identity(s) {
+          if ('string' !== typeOf(s)) {
+            s = '';
+          }
+          return s;
+        }
+        // recurse until the object is html
+        /*
+         * TODO - demonstrate use of merge / fold
+         * If two people objects have different members - say email and phone
+         * merge them into one for the sake of creating the template
+         */
+        function create_template(){
+            // set vars only once
+        }
+        function json2html(fixture, className, appendName, params) {
+          params = params || {};
+          if (undefined === typeOf(className)) {
+            className = "";
+          }
+          labelize = labelize || params.labelize || string_identity;
+          if ("function" === typeOf(params.singularize)) {
+            singularize = params.singularize
+          } else if (undefined === singularize) {
+            singularize = function (s) {
+              return string_identitiy(s) + "_instance";
+            }
+          }
+          function string2html() {
+            var s2h = document.createElement('input');
+            s2h.type = 'text';
+            s2h.className = className;
+            s2h.name = className;
+            s2h.value = fixture;
+            return s2h;
+          }
+          function array2html() {
+            var i,
+            ii,
+            ul = document.createElement('ul'),
+            li;
+            className = singularize(className);
+            ul.className = className;
+            for (i = 0, ii = fixture.length; i < ii; i += 1) {
+              li = document.createElement('li');
+              li.appendChild(json2html(fixture[i], className, false));
+              ul.appendChild(li);
+            }
+            return ul;
+          }
+          function object2html() {
+            var pdiv = document.createElement('div'),
+            div,
+            key;
+            pdiv.className = className;
+            for (key in fixture) {
+              if (fixture.hasOwnProperty(key)) {
+                div = document.createElement('div');
+                var p = json2html(fixture[key], key, true);
+                var s = document.createElement('span');
+                s.className='auto_title';
+                s.appendChild(document.createTextNode(labelize(key) + ": "));
+                div.appendChild(s);
+                div.appendChild(p);
+                div.className = key + '_container';
+                pdiv.appendChild(div);
+              }
+            }
+            return pdiv;
+          }
+          if ("string" === typeOf(fixture)) {
+            return string2html();
+          } else if ("array" === typeOf(fixture)) {
+            return array2html();
+          } else if ("object" === typeOf(fixture)) {
+            return object2html();
+          } else if ("function" === typeOf(fixture)) {
+            alert("functions are not supported");
+            return;
+          } else {
+            alert("some weird crap happened");
+          }
+        }
+        document.body.insertBefore(json2html(fixture, "contacts", undefined, {
+          labelize: format_label,
+          singularize: format_array_item
+        }), document.body.firstChild);
+      }());
+    </div>
+  </body>
+    <script>
+      "use strict";
+      (function (doc) {
+        var showdown = new Showdown.converter(),
+        body = doc.getElementById('doc'),
+        markdown,
+        html;
+
+        eval($('#doc').text());
+        markdown = body.innerHTML;
+        html = showdown.makeHtml(markdown);
+        body.innerHTML = html;
+   
+        hljs.initHighlightingOnLoad();
+      }(window.document));
+    </script>
+</html>

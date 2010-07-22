@@ -67,7 +67,7 @@ Wrap a function with one that mimics its parameters and return value.
       ];
 
       // get swap values from an args array
-      function getCertainValues(args, directive, hash) {
+      function arguceptor(args, directive, hash) {
         //args = Array.prototype.slice.call(arguments),
         var i = 0,
         d,
@@ -133,7 +133,7 @@ Wrap a function with one that mimics its parameters and return value.
         }
         return hash;
       }
-      console.log(getCertainValues(args, directive, hash).timeout);
+      console.log(arguceptor(args, directive, hash).timeout);
     }());
     </div>
     <pre>

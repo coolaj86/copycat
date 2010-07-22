@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fb="http://www.facebook.com/2008/fbml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>CopyCat - ERUP - PURE in Reverse</title>
+    <link rel="stylesheet" type="text/css" href="vendor/highlight/styles/school_book.css" media="screen" />
+    <script src="vendor/showdown/showdown.js"></script>
+    <script src="vendor/highlight/highlight.pack.js"></script>
+
+    <script src="vendor/jquery/jquery-1.4.2.js"></script>
+    <script src="vendor/underscore/underscore.js"></script>
+    <!-- script src="http://bitbucket.org/JustinLove/es5/raw/c6103eab597c/es5.js"></script -->
+    <!-- script src="http://vice-versa.googlecode.com/files/vice-versa.0.1.4b.min.js"></script -->
+    <script src="vendor/persevere/global-es5.js"></script>
+    <script src="vendor/jaysyncunit/jaysyncunit.js"></script>
+    <script src="vendor/pure/pure.js"></script>
+
+    <script src="lib/erup-test.js"></script>
+  </head>
+  <body>
+    <a href="http://github.com/coolaj86/erup">PURE in Reverse On GitHub</a>
+      <div class="network">
+        <input class="ipaddr" value="192.168.1.101" />
+        <input class="netmask" value="255.255.255.0" />
+        <input class="gateway" value="192.168.1.1" />
+
+        <div class="clients">
+          <div class="client">
+            <input class="ipaddr2" value="192.168.1.102" />
+          </div>
+          <div class="client">
+            <input class="ipaddr2" value="192.168.1.105" />
+          </div>
+        </div>
+      </div>
+
+TODO: breadth-first search on html elements to eliminate false positives
+    <div id="doc">
+    (function () {
+      var directives = [];
+      directives.push({
+        "ipaddr" : ".network .ipaddr@value",
+        "netmask" : ".network .netmask@value",
+        "gateway" : ".network .gateway@value"
+      });
+
+      directives.push({
+        "ipaddr" : {
+          ".network .ipaddr@value" : function (value) {
+            return value
+          },
+        },
+        "netmask" : ".network .netmask@value",
+        "gateway" : ".network .gateway@value"
+      });
+
+    /*
+     *  {
+     *    ".ipaddr" : "ipaddr",
+     *    ".netmask" : function(data) {
+     *      return data.netmask;
+     *    },
+     *    ".gateways" : {
+     *      "gateway<-"
+     *    }
+     *  }
+     */
+
+      directives.push({
+        "ipaddr" : ".network .ipaddr@value",
+        "netmask" : function (parent_element) {
+          return $(parent_element).find(".network .netmask").val();
+        },
+        "gateways" : {
+          ".gateway<-.network .gateways" : ""
+        }
+      });
+
+      function erup(directive) {
+        var data = {},
+        key,
+        k;
+        //alert(directive[key]);
+        for (key in directive) {
+          if(isObjectHash(directive[key])) {
+            //alert("key: " + key); //ipaddr
+            //alert("val: " + JSON.stringify(directive[key],null,'\t')); // {'sel':func}
+            var k = Object.keys(directive[key])[0];
+            //alert("k: " + k); //"sel"
+            //alert("$(k).val() :" + $(k).val());
+            data[key] = directive[key][k]($(k).val());
+          } else {
+            data[key] = $(directive[key]).val();
+          }
+        }
+        return data;
+      }
+
+      $(function() {
+        var happy;
+        directives.forEach(function (directive, i, arr) {
+          var other = $('body').scrape(directive);
+          console.log(JSON.stringify(other, null, "\t"));
+          happy = _.isEqual(other, {
+            ipaddr: "192.168.1.101",
+            netmask: "255.255.255.0",
+            gateway: "192.168.1.1"
+          });
+          if (happy) {
+            alert("happy!");
+          } else {
+            alert('bad result:' + JSON.stringify(other));
+          }
+        });
+      });
+
+      /* Thinking out loud
+        people : [
+          {
+            "name" : ".person .name",
+            "email" : [
+              ".person .email",
+            ],
+            "uid" : ".person .uid"
+          },
+        ]
+
+      */
+    }());
+    </div>
+  </body>
+    <script>
+      "use strict";
+      (function (doc) {
+        var showdown = new Showdown.converter(),
+        body = doc.getElementById('doc'),
+        markdown,
+        html;
+
+        eval($('#doc').text());
+        markdown = body.innerHTML;
+        html = showdown.makeHtml(markdown);
+        body.innerHTML = html;
+   
+        hljs.initHighlightingOnLoad();
+      }(window.document));
+    </script>
+</html>

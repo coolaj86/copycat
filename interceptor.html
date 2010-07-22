@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fb="http://www.facebook.com/2008/fbml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>CopyCat - Interceptor</title>
+    <link rel="stylesheet" type="text/css" href="vendor/highlight/styles/school_book.css" media="screen" />
+    <script src="vendor/showdown/showdown.js"></script>
+    <script src="vendor/highlight/highlight.pack.js"></script>
+    <script src="vendor/jquery/jquery-1.4.2.js"></script>
+    <script src="vendor/underscore/underscore.js"></script>
+    <script src="vendor/persevere/global-es5.js"></script>
+    <script src="vendor/jaysyncunit/jaysyncunit.js"></script>
+  </head>
+  <body>
+Wrap a function with one that mimics its parameters and return value.
+    <div id="doc">
+    "use strict";
+    (function () {
+      function typeOf(value) {
+        var s = typeof value;
+        if (s === 'object') {
+          if (value) {
+            if (typeof value.length === 'number' &&
+              !(value.propertyIsEnumerable('length')) &&
+              typeof value.splice === 'function') {
+              s = 'array';
+            }
+          } else {
+            s = 'null';
+          }
+        }
+        return s;
+      } // Thanks to Crockford
+
+      /**
+       * Immediate Goal:
+       * $.getJSON = subscribify($.getJSON, [true, undefined,'callback', { onError : 'errback', timeout : 'timeout' }])
+       */
+
+
+      var directive = [
+        true, 
+        undefined, 
+        'callback', 
+        {
+          onError : 'errback',
+          timeout : 'timeout'
+        }
+      ],
+      hash = {
+        'callback': function () {},
+        'errback': function () {},
+        timeout: 0
+      },
+      args = [
+        'http://example.com',
+        function () {
+          return 'original_cb';
+        },
+        {
+          onError: function () {
+            return 'original_eb';
+          },
+          timeout: 42
+        }
+      ];
+
+      // get swap values from an args array
+      function getCertainValues(args, directive, hash) {
+        //args = Array.prototype.slice.call(arguments),
+        var i = 0,
+        d,
+        swap,
+        a;
+
+        function get_or_swap(key) {
+          swap = a[key];
+          if ('null' !== typeOf(hash[key])) {
+            a[key] = hash[d[key]];
+          }
+          hash[d[key]] = swap;
+        }
+        for(i = 0; i < args.length; i += 1) {
+          d = directive[i];
+          a = args[i];
+
+          // assume the argument exists and skip it
+          if (true === d) {
+            console.log('d is true');
+            continue;
+          }
+
+          // if there are optional params 
+          // and the length of params is less
+          // than the length of directive
+          // assume that it is the missing one
+          // then decrease the length of the directive
+          if ('undefined' === typeOf(d)) {
+            console.log('d is undefined');
+            if (args.length < directive.length && 0 < directive.length) {
+              console.log('shifting...');
+              directive.shift();
+              i -= 1;
+            }
+            continue;
+          }
+
+          // if we have a name for the sorry sap
+          // then grab or swap it from the hash
+          if ('string' === typeOf(d)) {
+            swap = a;
+            if ('null' !== typeOf(hash[d])) {
+              a = hash[d];
+            }
+            hash[d] = swap;
+            continue;
+          }
+
+          // If the directive is an object
+          // get or swap each key
+          if ('object' === typeOf(d)) {
+            console.log('d is object');
+            // but if the arg isn't an object, assume it to be optional
+            if ('object' !== typeOf(a) && 0 < directive.length) {
+              directive.shift();
+              i -= 1;
+              continue;
+            }
+            Object.keys(d).forEach(get_or_swap);
+            continue;
+          }
+        }
+        return hash;
+      }
+      console.log(getCertainValues(args, directive, hash).timeout);
+    }());
+    </div>
+    <pre>
+      // [] || {} || 0 || '' || false || function(){}  means that it's   required
+      // {required: 'name'} == swap values if value exists, otherwise grab
+      // { type: [] || {} || 0 || '' || false || function(){} || null || undefined }
+
+      /**
+       * End goal:
+       * intercepted = interceptor(map1, map2, map3)(wrapperFunc, wrappedFunc);
+       */
+
+      /**
+       * An enum which has a value
+       */
+      CC.enum = function () {
+        var type = {};
+        return function (name) { 
+          var result;
+          if ('undefined' != typeof name) {
+            result = name;
+            return func;
+          }
+          return {type: type, value: result};
+        }
+      };
+      CC.required = CC.enum();
+      CC.option = CC.enum();
+    </pre>
+  </body>
+    <script>
+      "use strict";
+      (function (doc) {
+        var showdown = new Showdown.converter(),
+        body = doc.getElementById('doc'),
+        markdown,
+        html;
+
+        eval($('#doc').text());
+        markdown = body.innerHTML;
+        html = showdown.makeHtml(markdown);
+        body.innerHTML = html;
+   
+        hljs.initHighlightingOnLoad();
+      }(window.document));
+    </script>
+</html>

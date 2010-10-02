@@ -1,5 +1,45 @@
 <html>
+  <head>
+    <style>
+      #json_object textarea {
+        width: 500px;
+        height: 500px;
+      }
+    </style>
+    <link rel="stylesheet" type="text/css" href="vendor/highlight/styles/school_book.css" media="screen" />
+    <script src="vendor/showdown/showdown.js"></script>
+    <script src="vendor/highlight/highlight.pack.js"></script>
+    <script src="vendor/jquery/jquery-1.4.2.js"></script>
+    <script>
+      $(function () {
+        $("body").delegate('#json_object', 'change', function (ev) {
+          $("#html_object").html($("#json_object textarea").val());
+          hljs.initHighlighting();
+        });
+        //hljs.initHighlightingOnLoad();
+      });
+    </script>
+  </head>
   <body>
     <li><a href="merge.html">merge</a></li>
+    <li><a href="template.html">template</a></li>
+
+    <div id="json_object">
+      Data go here:
+      <br/>
+      <textarea>
+  {
+    "key": "value",
+    "uberkey": "ubervalue"
+  }
+      </textarea>
+    </div>
+    <div>
+      Result go here:
+      <br/>
+      <pre>
+        <code id="html_object"></code>
+      </pre>
+    </div>
   </body>
 </html>

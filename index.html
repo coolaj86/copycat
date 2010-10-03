@@ -3,25 +3,53 @@
     <style>
       #json_object textarea {
         width: 500px;
-        height: 500px;
+        height: 150px;
       }
     </style>
     <link rel="stylesheet" type="text/css" href="vendor/highlight/styles/school_book.css" media="screen" />
+    <script src="vendor/remedial.js"></script>
     <script src="vendor/showdown/showdown.js"></script>
     <script src="vendor/highlight/highlight.pack.js"></script>
     <script src="vendor/jquery/jquery-1.4.2.js"></script>
+    <script src="lib/merge.js"></script>
+    <script src="lib/flatten.js"></script>
     <script>
       $(function () {
         $("body").delegate('#json_object', 'change', function (ev) {
           $("#html_object").html($("#json_object textarea").val());
-          hljs.initHighlighting();
+          //hljs.initHighlighting();
+        });
+        $("body").delegate('#coalesce', 'click', function (ev) {
+          ev.preventDefault();
+          var text;
+          try {
+            text = eval('(' + $("#json_object textarea").val() + ')');
+          } catch(e) {
+            text = {error: e.toString(), msg: "could not parse input"};
+          }
+          var merged = CopyCat.coalesce(text);
+          $("#html_object").html(JSON.stringify(merged, null, '  '));
+          return;
+        });
+        $("body").delegate('#flatten', 'click', function (ev) {
+          ev.preventDefault();
+          var text;
+          try {
+            text = eval('(' + $("#json_object textarea").val() + ')');
+          } catch(e) {
+            text = {error: e.toString(), msg: "could not parse input"};
+          }
+          var merged = CopyCat.flatten('global', text);
+          $("#html_object").html(JSON.stringify(merged, null, '  '));
+          return;
         });
         //hljs.initHighlightingOnLoad();
       });
     </script>
   </head>
   <body>
-    <li><a href="merge.html">merge</a></li>
+    <li><a id="coalesce" href="merge.html">coalesce</a> (merge vertically)</li>
+    <li><a id="flatten" href="flatten.html">flatten</a> (merge horizontally)</li>
     <li><a href="template.html">template</a></li>
 
     <div id="json_object">
@@ -29,8 +57,12 @@
       <br/>
       <textarea>
   {
-    "key": "value",
-    "uberkey": "ubervalue"
+    "string": "string",
+    "number": 1,
+    "boolean": true,
+    "array" : [1,2,3,4],
+    "object" : {a: 1, b: 2, c: 3, d: 4},
+    "func": function () {}
   }
       </textarea>
     </div>

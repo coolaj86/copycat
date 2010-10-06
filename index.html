@@ -1,12 +1,42 @@
 <html>
   <head>
     <style>
+      #html_container {
+        float: left;
+        width: 400px;
+      }
       #json_object textarea {
-        width: 500px;
+        float: left;
+        width: 400px;
         height: 150px;
       }
       .url_input {
         width: 600px;
+      }
+    </style>
+    <style>
+      #doc {
+        float: left;
+      }
+      div.custom_api {
+        float: right;
+        width: 600px;
+      }
+      .custom_api div, .custom_api span, .custom_api ul, .custom_api li {
+        margin: 10px;
+        padding: 5px;
+      }
+      .custom_api div {
+        border: 2px solid black;
+      }
+      .custom_api span {
+        border: 1px solid blue;
+      }
+      .custom_api ul {
+        border: 2px solid orange;
+      }
+      .custom_api li {
+        border: 1px solid green;
       }
     </style>
     <link rel="stylesheet" type="text/css" href="vendor/highlight/styles/school_book.css" media="screen" />
@@ -114,6 +144,7 @@ Also, CopyCat is great for understanding poorly documented APIs in the wild. Jus
   </ul>
 </p>
 
+    <div id="html_view"></div>
     <div id="json_object">
       Data go here:
       <br/>
@@ -129,13 +160,12 @@ Also, CopyCat is great for understanding poorly documented APIs in the wild. Jus
   }
       </textarea>
     </div>
-    <div>
+    <div id="html_container">
       Result go here:
       <br/>
       <pre>
         <code id="html_object"></code>
       </pre>
     </div>
-    <div id="html_view"></div>
   </body>
 </html>

@@ -5,16 +5,28 @@
         width: 500px;
         height: 150px;
       }
+      .url_input {
+        width: 600px;
+      }
     </style>
     <link rel="stylesheet" type="text/css" href="vendor/highlight/styles/school_book.css" media="screen" />
     <script src="vendor/remedial.js"></script>
     <script src="vendor/showdown/showdown.js"></script>
     <script src="vendor/highlight/highlight.pack.js"></script>
     <script src="vendor/jquery/jquery-1.4.2.js"></script>
+    <script src="vendor/inflection-js/inflection.js"></script>
     <script src="lib/merge.js"></script>
     <script src="lib/flatten.js"></script>
+    <script src="lib/autotemplate.js"></script>
     <script>
       $(function () {
+        $("body").delegate('#api_form', 'submit', function (ev) {
+          ev.preventDefault();
+          $.get($('#api_form input[name=api_url]').val(), {}, function (data) {
+            //alert(JSON.stringify(data));
+            $("#json_object textarea").val(JSON.stringify(data, null, true));
+          }, 'json');
+        });
         $("body").delegate('#json_object', 'change', function (ev) {
           $("#html_object").html($("#json_object textarea").val());
           //hljs.initHighlighting();
@@ -43,20 +55,71 @@
           $("#html_object").html(JSON.stringify(merged, null, '  '));
           return;
         });
+        $("body").delegate('#autotemplate', 'click', function (ev) {
+          ev.preventDefault();
+          try {
+            text = eval('(' + $("#json_object textarea").val() + ')');
+          } catch(e) {
+            text = {error: e.toString(), msg: "could not parse input"};
+          }
+          var dom = CopyCat.autotemplate(text, "custom_api");
+          //var dom = CopyCat.autotemplate.test(text);
+          $("#html_view").html(dom);
+        });
         //hljs.initHighlightingOnLoad();
       });
     </script>
   </head>
   <body>
-    <li><a id="coalesce" href="merge.html">coalesce</a> (merge vertically)</li>
-    <li><a id="flatten" href="flatten.html">flatten</a> (merge horizontally)</li>
-    <li><a href="template.html">template</a></li>
+<p>
+Perhaps the biggest problem with documentation is that it's an afterthought.
+We tend to want to focus on <em>getting things done</em>, 
+not on <em><strong>meta-</strong>getting-things-done</em>.
+</p>
+<p>
+Inline documentation is cumbersome, difficult to format, and isn't easy to present to a user.
+That means that you end up documenting things at least twice.
+And there's a definite distinction between technical (api) documentation and business (end-user) documentation.
+</p>
+<p>
+CopyCatJS handles the meta and let's you program. You can either document first, or document after, or document as you go.
+Also, CopyCat is great for understanding poorly documented APIs in the wild. Just give it a try!.
+</p>
+<ol>
+  <li>(Optional) Choose an API to examine:
+    <div id="api_form">
+    <form>
+      <br/>API URL (without callback param): <input class="url_input" name="api_url" type="text" value="http://socialgraph.apis.google.com/lookup?q=coolaj86@gmail.com&fme=1&edo=1&edi=1&pretty=1"/>
+      <br/>JSONP callback param <input name="api_url_callback" type="text" value="callback" />
+      <br/><input name="get_url" type="submit" value="Get Data Sample" /> 
+    </form>
+    </div>
+  </li>
+  <li>Now you can simplify the data in ways that are easier for you to understand it:
+    <ul>
+      <li><a id="autotemplate" href="template.html">Auto-template</a> (visualize)</li>
+      <li><a id="coalesce" href="merge.html">Coalesce</a> (merge vertically)</li>
+      <li><a id="flatten" href="flatten.html">Flatten</a> (merge horizontally)</li>
+      <li><a id="describe" href="#TODO_forthcoming">Describe</a> (create data-dictionary)</li>
+    </ul>
+  </li>
+</ol>
+
+<p>TODO:
+  <ul>
+    <li>Handle 'null'</li>
+    <li>Abstract recurse mechanism</li>
+    <li>Create dictionary template</li>
+    <li>Stylize</li>
+  </ul>
+</p>
 
     <div id="json_object">
       Data go here:
       <br/>
       <textarea>
   {
+    "undefined": undefined,
     "string": "string",
     "number": 1,
     "boolean": true,
@@ -73,5 +136,6 @@
         <code id="html_object"></code>
       </pre>
     </div>
+    <div id="html_view"></div>
   </body>
 </html>

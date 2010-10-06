@@ -52,10 +52,10 @@
       $(function () {
         $("body").delegate('#api_form', 'submit', function (ev) {
           ev.preventDefault();
-          $.get($('#api_form input[name=api_url]').val(), {}, function (data) {
+          $.getJSON($('#api_form input[name=api_url]').val() + '&' + $('#api_form input[name=api_url_callback]').val() + '=?', {}, function (data) {
             //alert(JSON.stringify(data));
             $("#json_object textarea").val(JSON.stringify(data, null, true));
-          }, 'json');
+          });
         });
         $("body").delegate('#json_object', 'change', function (ev) {
           $("#html_object").html($("#json_object textarea").val());
@@ -135,14 +135,13 @@ Also, CopyCat is great for understanding poorly documented APIs in the wild. Jus
   </li>
 </ol>
 
-<p>TODO:
+<p>TODO:</p>
   <ul>
     <li>Handle 'null'</li>
     <li>Abstract recurse mechanism</li>
     <li>Create dictionary template</li>
     <li>Stylize</li>
   </ul>
-</p>
 
     <div id="html_view"></div>
     <div id="json_object">

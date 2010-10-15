@@ -70,7 +70,7 @@
           } catch(e) {
             text = {error: e.toString(), msg: "could not parse input"};
           }
-          var merged = CopyCat.coalesce(text);
+          var merged = escape(CopyCat.coalesce(text));
           $("#html_object").html(JSON.stringify(merged, null, '  '));
           return;
         });
@@ -82,7 +82,7 @@
           } catch(e) {
             text = {error: e.toString(), msg: "could not parse input"};
           }
-          var merged = CopyCat.flatten('global', text);
+          var merged = escape(CopyCat.flatten('global', text));
           $("#html_object").html(JSON.stringify(merged, null, '  '));
           return;
         });

@@ -120,9 +120,15 @@ Also, CopyCat is great for understanding poorly documented APIs in the wild. Jus
   <li>(Optional) Choose an API to examine:
     <div id="api_form">
     <form>
-      <br/>API URL (without callback param): <input class="url_input" name="api_url" type="text" value="http://socialgraph.apis.google.com/lookup?q=coolaj86@gmail.com&fme=1&edo=1&edi=1&pretty=1"/>
-      <br/>JSONP callback param <input name="api_url_callback" type="text" value="callback" />
+      <br/>API URL (without callback param): <input class="url_input" name="api_url" type="text" value="http://api.flickr.com/services/feeds/photos_public.gne?tags=cat&tagmode=any&format=json"/>
+      <br/>JSONP callback param <input name="api_url_callback" type="text" value="jsoncallback" />
       <br/><input name="get_url" type="submit" value="Get Data Sample" /> 
+      <ul>
+        <li>Google Social: 
+          http://socialgraph.apis.google.com/lookup?q=coolaj86@gmail.com&fme=1&edo=1&edi=1&pretty=1
+          callback
+        </li>
+      </ul>
     </form>
     </div>
   </li>

@@ -72,6 +72,7 @@
           }
           var merged = CopyCat.coalesce(text);
           $("#html_object").text(JSON.stringify(merged, null, '  '));
+          $("#json_object textarea").val(JSON.stringify(merged, null, '  '));
           return;
         });
         $("body").delegate('#flatten', 'click', function (ev) {
@@ -84,6 +85,7 @@
           }
           var merged = CopyCat.flatten('global', text);
           $("#html_object").text(JSON.stringify(merged, null, '  '));
+          $("#json_object textarea").val(JSON.stringify(merged, null, '  '));
           return;
         });
         $("body").delegate('#autotemplate', 'click', function (ev) {
